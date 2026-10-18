@@ -15,30 +15,15 @@ class ExamPaper(BaseModel):
     title: str
     questions: list[ExamQuestion]
 
-
 def get_paper(topic, question_count):
     prompt = f"""
     Generate an exam paper containing exactly {question_count}
     question(s) about: {topic}.
 
-    FORMATTING RULES:
-    - Use ONLY the following tags:
-    - Use <b>text</b> for bold.
-    - Use <i>text</i> for italics.
-    - Use <u>text</u> for underlining.
-    - Use <sub>text</sub> for subscript.
-    - Use <super>text</super> for superscript.
-    - </para> can also be used
-    - NEVER use Markdown formatting.
-    - NEVER use **text** for bold or *text* for italics.
-    - Use tags only when formatting is appropriate.
-
-    For example:
-    Correct: <b>Explain</b> two causes of climate change.
-    Incorrect: **Explain** two causes of climate change.
-
-    Correct: <i>in vitro</i>
-    Incorrect: *in vitro*
+    FORMATTING:
+    - Question keywords should be in bold
+    - Numbers relevant to how the question should be answered should also be in bold,
+    e.g give **two** answers.
 
     Mark allocation rules:
     - 1 mark: Recall a simple fact or give a short answer.
@@ -75,7 +60,9 @@ def get_paper(topic, question_count):
     Markscheme:
     - The markscheme should have an entry for each mark in the question.
     - The 'content' field should contain the keyword, phrase or point that
-      needs to be in the answer in order for the mark to be awarded
+      needs to be in the answer in order for the mark to be awarded, this 
+      can also be an example.
+    - It should NOT just say 'definition', it should CONTAIN the definition.
     - For questions that have a definite answer, such as a maths question,
       the answer should be in the content.
     - The 'marks_awarded' field should contain the number of marks that
@@ -101,4 +88,14 @@ def get_paper(topic, question_count):
         },
     )
 
-    return ExamPaper.model_validate_json(response.message.content)
+    paper = ExamPaper.model_validate_json(response.message.content)
+
+    with open(f"{paper.title.replace(" ", "_")}.json", "w") as config:
+        config.write(response.message.content)
+
+    return paper
+
+def create_from_config(config_filename):
+    with open(config_filename, "r") as config:
+        paper = ExamPaper.model_validate_json(config.read())
+        return paper
