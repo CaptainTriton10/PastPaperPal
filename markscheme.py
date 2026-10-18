@@ -1,5 +1,6 @@
 import reportlab.platypus as plat
 from style import *
+from markdown import markdown
 
 def create_markscheme_pdf(paper):
     total_marks = sum([x.marks for x in paper.questions])
@@ -25,7 +26,7 @@ def create_markscheme_pdf(paper):
 
     def add_answer(num, question, markscheme, marks):
         content.append(
-            plat.Paragraph(f"<b>{num}.</b> {question}", question_style), 
+            plat.Paragraph(f"<b>{num}.</b> {markdown(question)}", question_style), 
         )
         content.append(plat.Spacer(1, 24))
 
@@ -34,7 +35,7 @@ def create_markscheme_pdf(paper):
         for mark in markscheme:
             data.append(
                 [
-                    plat.Paragraph(mark.content),
+                    plat.Paragraph(markdown(mark.content)),
                     plat.Paragraph(f"{mark.marks_awarded} {'mark' if mark.marks_awarded == 1 else 'marks'}")
                 ]
             )

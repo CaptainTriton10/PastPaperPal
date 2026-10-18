@@ -1,5 +1,6 @@
 import reportlab.platypus as plat
 from style import *
+from markdown import markdown
 
 def create_paper_pdf(paper):
     total_marks = sum([x.marks for x in paper.questions])
@@ -51,7 +52,7 @@ def create_paper_pdf(paper):
 
     def add_question(num, question, marks, lines):
         content.append(
-            plat.Paragraph(f"<b>{num}.</b> {question}", question_style), 
+            plat.Paragraph(f"<b>{num}.</b> {markdown(question)}", question_style), 
         )
 
         for i in range(lines):
