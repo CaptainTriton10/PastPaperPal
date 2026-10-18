@@ -2,3 +2,4 @@
 __pycache__
 markscheme.pdf
 paper.pdf
+*.json
